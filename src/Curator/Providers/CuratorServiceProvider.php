@@ -16,6 +16,12 @@ use Illuminate\Support\ServiceProvider;
 
 class CuratorServiceProvider extends ServiceProvider
 {
+    //List of Curator's commands.
+    protected $curatorCommands =
+        [
+            \Curator\Console\Curator::class
+        ];
+
     /**
      * Bootstrap the application services.
      *
@@ -33,6 +39,7 @@ class CuratorServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        //Register Curator's commands with Artisan.
+        $this->commands($this->curatorCommands);
     }
 }
