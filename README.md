@@ -23,3 +23,15 @@
 ```sh
 ~/laravel$ composer dump-autoload
 ```
+
+#2. Register Curator's ServiceProvider into Laravel.
+
+**Modify File**: /laravel/config/app.php
+
+```php
+        /*
+         * Package Service Providers...
+         */
+
+        Curator\Providers\CuratorServiceProvider::class,
+```
