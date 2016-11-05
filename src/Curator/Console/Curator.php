@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Curator\Console;
 
 use Illuminate\Console\Command;
 
@@ -37,6 +37,6 @@ class Curator extends Command
      */
     public function handle()
     {
-        //
+        $this->info('The Curator is unpacking her bags ..');
     }
 }
