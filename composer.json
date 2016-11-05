@@ -1,0 +1,12 @@
+{
+    "name": "ila/curator",
+    "description": "Laravel v5.3 advanced user management system.",
+    "authors": [
+        {
+            "name": "James Druhan",
+            "email": "jdruhan.home@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
