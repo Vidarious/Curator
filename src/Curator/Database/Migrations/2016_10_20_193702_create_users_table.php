@@ -29,7 +29,7 @@ class CreateUsersTable extends Migration
             $table->index(['username', 'email']);
 
             $table->foreign('status_id')
-                  ->references('id')->on('Status')
+                  ->references('id')->on('status')
                   ->onDelete('no action')
                   ->onUpdate('no action');
         });
