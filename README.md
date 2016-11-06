@@ -46,3 +46,9 @@ Initializing the Curator application will:
 - Remove Laravel's default Auth migrations.
 - Add Curator's migrations.
 - Run Curator's migrations.
+
+**Options**
+
+```sh
+-- force : When copying files Curator will override any existing Curator files.
+```
