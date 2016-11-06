@@ -1,5 +1,3 @@
-# Curator v0.0
-
 #### INSTALLATION
 
 #1 Add the Curator application to your Laravel PSR-4 autoload.
@@ -35,3 +33,15 @@
 
         Curator\Providers\CuratorServiceProvider::class,
 ```
+
+#3. Initialize the Curator.
+
+**Run Command**
+
+```sh
+~/laravel$ php artisan curator:init
+```
+
+Initializing the Curator application will:
+- Remove Laravel's default Auth migrations.
+- Add Curators migrations.
