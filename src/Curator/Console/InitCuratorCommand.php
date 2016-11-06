@@ -4,7 +4,7 @@ namespace Curator\Console;
 
 use Illuminate\Console\Command;
 
-class CuratorInit extends Command
+class InitCuratorCommand extends Command
 {
     /**
      * The name and signature of the console command.
@@ -57,7 +57,7 @@ class CuratorInit extends Command
      *
      * @var string
      */
-    protected $curatorMigrationPage = 'database/migrations/curator';
+    protected $curatorMigrationPath = 'database/migrations/curator';
 
     /**
      * Create a new command instance.
@@ -118,9 +118,9 @@ class CuratorInit extends Command
     protected function createDirectories()
     {
         //Migrations
-        if(! is_dir(base_path($this->curatorMigrationPage)))
+        if(! is_dir(base_path($this->curatorMigrationPath)))
         {
-            mkdir(base_path($this->curatorMigrationPage), 0755, true);
+            mkdir(base_path($this->curatorMigrationPath), 0755, true);
         }
     }
 
@@ -141,9 +141,9 @@ class CuratorInit extends Command
         foreach($this->curatorMigrations as $file)
         {
             //Check if file exists. If true, skip copy (--force option overides).
-            if($this->option('force') || ! is_file(base_path($this->curatorMigrationPage . '/' . $file)))
+            if($this->option('force') || ! is_file(base_path($this->curatorMigrationPath . '/' . $file)))
             {
-                copy(__DIR__ . '../../Database/Migrations/' . $file, base_path($this->curatorMigrationPage . '/' . $file));
+                copy(__DIR__ . '../../Database/Migrations/' . $file, base_path($this->curatorMigrationPath . '/' . $file));
             }
             else
             {
@@ -177,7 +177,7 @@ class CuratorInit extends Command
     {
         if($this->confirm('> Do you want to run Curator\'s migrations? [y|N]', true))
         {
-            $this->callSilent('migrate', ['--path' => $this->curatorMigrationPage]);
+            $this->callSilent('migrate', ['--path' => $this->curatorMigrationPath]);
 
             $this->comment('Migrations OK.' . PHP_EOL);
         }

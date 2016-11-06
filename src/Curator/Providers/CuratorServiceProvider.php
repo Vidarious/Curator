@@ -19,7 +19,7 @@ class CuratorServiceProvider extends ServiceProvider
     //List of Curator's commands.
     protected $curatorCommands =
         [
-            \Curator\Console\CuratorInit::class
+            \Curator\Console\InitCuratorCommand::class
         ];
 
     /**
