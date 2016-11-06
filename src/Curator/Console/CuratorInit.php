@@ -77,7 +77,14 @@ class CuratorInit extends Command
         $this->info(PHP_EOL . PHP_EOL . '#2. Unpacking the Curator\'s migrations ..');
         $this->unpackMigrations();
 
-        $this->info(PHP_EOL . 'The Curator has settled in nicely!');
+        if($this->confirm('Do you want to run Curator\'s migrations? [y|N]', true))
+        {
+            $this->doMigrate();
+
+            $this->comment('Migrations OK.');
+        }
+
+        $this->info('The Curator has settled in nicely!');
     }
 
     /**
@@ -153,5 +160,15 @@ class CuratorInit extends Command
         {
             $this->comment(''); //Output formatting correction.
         }
+    }
+
+    /**
+     * Runs the migrate command for Curator's migration files (database/migrations/curator).
+     *
+     * @return void
+     */
+    protected function doMigrate()
+    {
+        $this->callSilent('migrate', ['--path' => 'database/migrations/curator']);
     }
 }
