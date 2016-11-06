@@ -53,6 +53,13 @@ class CuratorInit extends Command
         ];
 
     /**
+     * Laravel path for Curator's migrations.
+     *
+     * @var string
+     */
+    protected $curatorMigrationPage = 'database/migrations/curator';
+
+    /**
      * Create a new command instance.
      *
      * @return void
@@ -71,18 +78,10 @@ class CuratorInit extends Command
     {
         $this->info('The Curator is moving in ..' . PHP_EOL);
 
-        $this->info('#1. Tossing out Laravel\'s default Auth migrations ..');
         $this->cleanUp();
-
-        $this->info(PHP_EOL . PHP_EOL . '#2. Unpacking the Curator\'s migrations ..');
+        $this->createDirectories();
         $this->unpackMigrations();
-
-        if($this->confirm('Do you want to run Curator\'s migrations? [y|N]', true))
-        {
-            $this->doMigrate();
-
-            $this->comment('Migrations OK.');
-        }
+        $this->doMigrate();
 
         $this->info('The Curator has settled in nicely!');
     }
@@ -94,6 +93,8 @@ class CuratorInit extends Command
      */
     protected function cleanUp()
     {
+        $this->info('#1. Tossing out Laravel\'s default Auth migrations ..');
+
         $progressBar = $this->output->createProgressBar(count($this->laravelMigrations));
 
         foreach($this->laravelMigrations as $file)
@@ -110,6 +111,20 @@ class CuratorInit extends Command
     }
 
     /**
+     * Create the necessary directories for the Curator application
+     *
+     * @return void
+     */
+    protected function createDirectories()
+    {
+        //Migrations
+        if(! is_dir(base_path($this->curatorMigrationPage)))
+        {
+            mkdir(base_path($this->curatorMigrationPage), 0755, true);
+        }
+    }
+
+    /**
      * Copies Curator's migration files to Laravel's migration folder: database/migrations.
      * This will allow users to 'php artisan migrate' Curator's migrations along with
      * their own migrations.
@@ -118,32 +133,23 @@ class CuratorInit extends Command
      */
     protected function unpackMigrations()
     {
-        //Create sub-directories if necessary.
-        if(! is_dir(base_path('database/migrations/curator')))
-        {
-            mkdir(base_path('database/migrations/curator'), 0755, true);
-        }
+        $this->info(PHP_EOL . PHP_EOL . '#2. Unpacking the Curator\'s migrations ..');
 
         $progressBar = $this->output->createProgressBar(count($this->curatorMigrations));
 
         //Copy Curator migration files.
         foreach($this->curatorMigrations as $file)
         {
-            if ($this->option('force'))
+            //Check if file exists. If true, skip copy (--force option overides).
+            if($this->option('force') || ! is_file(base_path($this->curatorMigrationPage . '/' . $file)))
             {
-                copy(__DIR__ . '../../Database/Migrations/' . $file, base_path('database/migrations/curator/' . $file));
+                copy(__DIR__ . '../../Database/Migrations/' . $file, base_path($this->curatorMigrationPage . '/' . $file));
             }
             else
             {
-                //Check if file exists. If true, skip copy.
-                if(! is_file(base_path('database/migrations/curator/' . $file)))
-                {
-                    copy(__DIR__ . '../../Database/Migrations/' . $file, base_path('database/migrations/curator/' . $file));
-                }
-                else
-                {
-                    $notice = ' (Some of Curator migrations already exist, these were not unpacked)';
-                }
+                $notice = PHP_EOL
+                        . PHP_EOL . 'Some of Curator migrations already exist, these were not unpacked.'
+                        . PHP_EOL . 'Use --force to overide existing Curator migrations.';
             }
 
             $progressBar->advance();
@@ -169,6 +175,11 @@ class CuratorInit extends Command
      */
     protected function doMigrate()
     {
-        $this->callSilent('migrate', ['--path' => 'database/migrations/curator']);
+        if($this->confirm('> Do you want to run Curator\'s migrations? [y|N]', true))
+        {
+            $this->callSilent('migrate', ['--path' => $this->curatorMigrationPage]);
+
+            $this->comment('Migrations OK.' . PHP_EOL);
+        }
     }
 }
