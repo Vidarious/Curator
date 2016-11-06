@@ -44,4 +44,5 @@
 
 Initializing the Curator application will:
 - Remove Laravel's default Auth migrations.
-- Add Curators migrations.
+- Add Curator's migrations.
+- Run Curator's migrations.
