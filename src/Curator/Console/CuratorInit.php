@@ -11,7 +11,7 @@ class CuratorInit extends Command
      *
      * @var string
      */
-    protected $signature = 'curator:init';
+    protected $signature = 'curator:init {--force : Force Curator to override existing Curator data}';
 
     /**
      * The console command description.
@@ -122,14 +122,21 @@ class CuratorInit extends Command
         //Copy Curator migration files.
         foreach($this->curatorMigrations as $file)
         {
-            //Check if file exists. If true, skip copy.
-            if(! is_file(base_path('database/migrations/curator/' . $file)))
+            if ($this->option('force'))
             {
                 copy(__DIR__ . '../../Database/Migrations/' . $file, base_path('database/migrations/curator/' . $file));
             }
             else
             {
-                $notice = ' (Some of Curator migrations already exist, these were not unpacked)';
+                //Check if file exists. If true, skip copy.
+                if(! is_file(base_path('database/migrations/curator/' . $file)))
+                {
+                    copy(__DIR__ . '../../Database/Migrations/' . $file, base_path('database/migrations/curator/' . $file));
+                }
+                else
+                {
+                    $notice = ' (Some of Curator migrations already exist, these were not unpacked)';
+                }
             }
 
             $progressBar->advance();
