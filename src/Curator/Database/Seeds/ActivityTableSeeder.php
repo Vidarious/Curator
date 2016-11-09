@@ -14,7 +14,7 @@ class ActivityTableSeeder extends Seeder
     {
         //Get ID for the God Admin user.
         $userID = Curator\Repositories\Models\User::select('id')
-            ->where('username', 'James')
+            ->where('username', 'Vidarious')
             ->first()
             ->id;
 

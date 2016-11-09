@@ -1,49 +1,25 @@
 <?php
 
-/**
- * Curator's curator:init command operations. This command is used for the initial
- * install of the Curator app.
- */
-
 namespace Curator\Console;
 
 use Illuminate\Console\Command;
-use Illuminate\Database\Seeder;
 use Validator;
 
-class InitCuratorCommand extends Command
+class CuratorSeedCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'curator:init {--force : Force Curator to override existing Curator data}';
+    protected $signature = 'curator:seed {--force : Force Curator to seed with user data.}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Initializes the Curator user management application into your Laravel project.';
-
-    /**
-     * Array of Laravel's default auth migration files. Last modified to account for Laravel v5.316 migrations.
-     *
-     * @var string
-     */
-    protected $laravelMigrations =
-    [
-        'database/migrations/2014_10_12_000000_create_users_table.php',
-        'database/migrations/2014_10_12_100000_create_password_resets_table.php'
-    ];
-
-    /**
-     * Laravel path for Curator's migrations.
-     *
-     * @var string
-     */
-    protected $curatorMigrationPath = NULL;
+    protected $description = 'Seeds the database with Curator inital configuration data.';
 
     /**
      * Array of Curator's seed files.
@@ -120,73 +96,16 @@ class InitCuratorCommand extends Command
     public function __construct()
     {
         parent::__construct();
-
-        //Create the proper migration page for the migrate command.
-        $this->curatorMigrationPath = str_replace('/Console', '/Database/Migrations', __DIR__);
     }
 
     /**
      * Execute the console command.
      *
-     * @return void
+     * @return mixed
      */
     public function handle()
     {
-        $this->info('The Curator is moving in ..');
-
-        $this->cleanUp();
-
-        $this->doMigrate();
-
         $this->doSeed();
-
-        $this->info('The Curator has settled in nicely!');
-    }
-
-    /**
-     * Checks for existing default Laravel auth migrations and removes them for Curator's improved verisons.
-     *
-     * @return void
-     */
-    protected function cleanUp()
-    {
-        if($this->confirm('> Delete Laravel\'s default Auth migrations? [Highly Recommened]', TRUE))
-        {
-            $progressBar = $this->output->createProgressBar(count($this->laravelMigrations));
-
-            foreach($this->laravelMigrations as $file)
-            {
-                if(is_file(base_path($file)))
-                {
-                    unlink(base_path($file));
-
-                    $progressBar->advance();
-                }
-            }
-
-            $progressBar->finish();
-
-            echo PHP_EOL . PHP_EOL;
-        }
-        else
-        {
-            $this->comment('IMPORTANT: Do not to migrate Laravel\'s default Auth migrations as they will conflict with the Curators.');
-        }
-    }
-
-    /**
-     * Runs the migrate command for Curator's migration files (database/migrations/curator).
-     *
-     * @return void
-     */
-    protected function doMigrate()
-    {
-        if($this->confirm('> Do you want to run Curator\'s migrations? [y|N]', true))
-        {
-            $this->call('migrate', ['--path' => $this->curatorMigrationPath]);
-
-            $this->comment('Migrations Successful.' . PHP_EOL);
-        }
     }
 
     /**
@@ -196,9 +115,9 @@ class InitCuratorCommand extends Command
      */
     protected function doSeed()
     {
-        $this->info('** Seeding is required for initial setup **');
+        $this->info(PHP_EOL . '** Seeding is required for initial setup **');
 
-        if($this->confirm('> Do you want to run Curator\'s seeds? [y|N]', true))
+        if($this->option('force') || $this->confirm('> Do you want to run Curator\'s seeds? [y|N]', true))
         {
             $this->gatherDetails();
 

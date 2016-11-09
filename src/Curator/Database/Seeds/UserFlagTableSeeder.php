@@ -12,7 +12,7 @@ class UserFlagTableSeeder extends Seeder
     {
         //Get ID for the SysAdmin user.
         $userID = Curator\Repositories\Models\User::select('id')
-            ->where('username', 'James')
+            ->where('username', 'Vidarious')
             ->first()
             ->id;
 

@@ -18,7 +18,10 @@ class CuratorServiceProvider extends ServiceProvider
      */
     protected $curatorCommands =
     [
-        \Curator\Console\InitCuratorCommand::class
+        \Curator\Console\CuratorInitCommand::class,
+        \Curator\Console\CuratorMigrateCommand::class,
+        \Curator\Console\CuratorSeedCommand::class,
+        \Curator\Console\CuratorRollbackCommand::class
     ];
 
     /**
