@@ -1,8 +1,15 @@
 <?php
 
+/**
+ * Curator's curator:init command operations. This command is used for the initial
+ * install of the Curator app.
+ */
+
 namespace Curator\Console;
 
 use Illuminate\Console\Command;
+use Illuminate\Database\Seeder;
+use Validator;
 
 class InitCuratorCommand extends Command
 {
@@ -20,44 +27,90 @@ class InitCuratorCommand extends Command
      */
     protected $description = 'Initializes the Curator user management application into your Laravel project.';
 
-
     /**
-     * Array of Laravel's default auth migration files.
-     * Last modified to account for Laravel v5.316 migrations.
-     * @var string
-     */
-    protected $laravelMigrations =
-        [
-            'database/migrations/2014_10_12_000000_create_users_table.php',
-            'database/migrations/2014_10_12_100000_create_password_resets_table.php'
-        ];
-
-    /**
-     * Array of Curator's migration files.
+     * Array of Laravel's default auth migration files. Last modified to account for Laravel v5.316 migrations.
      *
      * @var string
      */
-    protected $curatorMigrations =
-        [
-            '2016_10_19_223416_create_status_table.php',
-            '2016_10_20_193702_create_users_table.php',
-            '2016_10_20_203139_create_flags_table.php',
-            '2016_10_20_204349_create_roles_table.php',
-            '2016_10_20_215801_create_permissions_table.php',
-            '2016_10_21_184917_create_settings_table.php',
-            '2016_10_21_193232_create_activity_table.php',
-            '2016_10_21_201637_create_user_flag_table.php',
-            '2016_10_21_203234_create_user_role_table.php',
-            '2016_10_21_203811_create_user_permission_table.php',
-            '2016_10_21_204409_create_role_permission_table.php'
-        ];
+    protected $laravelMigrations =
+    [
+        'database/migrations/2014_10_12_000000_create_users_table.php',
+        'database/migrations/2014_10_12_100000_create_password_resets_table.php'
+    ];
 
     /**
      * Laravel path for Curator's migrations.
      *
      * @var string
      */
-    protected $curatorMigrationPath = 'database/migrations/curator';
+    protected $curatorMigrationPath = NULL;
+
+    /**
+     * Array of Curator's seed files.
+     *
+     * @var array
+     */
+    protected $curatorSeeds =
+    [
+        'StatusTableSeeder',
+        'FlagsTableSeeder',
+        'RolesTableSeeder',
+        'PermissionsTableSeeder',
+        'UsersTableSeeder',
+        'ActivityTableSeeder',
+        'SettingsTableSeeder',
+        'UserRoleTableSeeder',
+        'UserFlagTableSeeder',
+        'RolePermissionTableSeeder'
+    ];
+
+    /**
+     * Array of Curator's stubs.
+     *
+     * @var array
+     */
+     protected $curatorStubs =
+     [
+         'UserRoleTableSeeder',
+         'UserFlagTableSeeder',
+         'UsersTableSeeder',
+         'ActivityTableSeeder'
+     ];
+
+    /**
+     * Super Admin account username.
+     *
+     * @var string
+     */
+    protected $adminUsername = NULL;
+
+    /**
+     * Super Admin account email.
+     *
+     * @var string
+     */
+    protected $adminEmail = NULL;
+
+    /**
+     * Super Admin account password.
+     *
+     * @var string
+     */
+    protected $adminPassword = NULL;
+
+    /**
+     * Super Admin account given name.
+     *
+     * @var string
+     */
+    protected $adminGivenName = NULL;
+
+    /**
+     * Super Admin account family name.
+     *
+     * @var string
+     */
+    protected $adminFamilyName = NULL;
 
     /**
      * Create a new command instance.
@@ -67,21 +120,25 @@ class InitCuratorCommand extends Command
     public function __construct()
     {
         parent::__construct();
+
+        //Create the proper migration page for the migrate command.
+        $this->curatorMigrationPath = str_replace('/Console', '/Database/Migrations', __DIR__);
     }
 
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return void
      */
     public function handle()
     {
-        $this->info('The Curator is moving in ..' . PHP_EOL);
+        $this->info('The Curator is moving in ..');
 
         $this->cleanUp();
-        $this->createDirectories();
-        $this->unpackMigrations();
+
         $this->doMigrate();
+
+        $this->doSeed();
 
         $this->info('The Curator has settled in nicely!');
     }
@@ -93,78 +150,27 @@ class InitCuratorCommand extends Command
      */
     protected function cleanUp()
     {
-        $this->info('#1. Tossing out Laravel\'s default Auth migrations ..');
-
-        $progressBar = $this->output->createProgressBar(count($this->laravelMigrations));
-
-        foreach($this->laravelMigrations as $file)
+        if($this->confirm('> Delete Laravel\'s default Auth migrations? [Highly Recommened]', TRUE))
         {
-            if(is_file(base_path($file)))
+            $progressBar = $this->output->createProgressBar(count($this->laravelMigrations));
+
+            foreach($this->laravelMigrations as $file)
             {
-                unlink(base_path($file));
+                if(is_file(base_path($file)))
+                {
+                    unlink(base_path($file));
 
-                $progressBar->advance();
-            }
-        }
-
-        $progressBar->finish();
-    }
-
-    /**
-     * Create the necessary directories for the Curator application
-     *
-     * @return void
-     */
-    protected function createDirectories()
-    {
-        //Migrations
-        if(! is_dir(base_path($this->curatorMigrationPath)))
-        {
-            mkdir(base_path($this->curatorMigrationPath), 0755, true);
-        }
-    }
-
-    /**
-     * Copies Curator's migration files to Laravel's migration folder: database/migrations.
-     * This will allow users to 'php artisan migrate' Curator's migrations along with
-     * their own migrations.
-     *
-     * @return void
-     */
-    protected function unpackMigrations()
-    {
-        $this->info(PHP_EOL . PHP_EOL . '#2. Unpacking the Curator\'s migrations ..');
-
-        $progressBar = $this->output->createProgressBar(count($this->curatorMigrations));
-
-        //Copy Curator migration files.
-        foreach($this->curatorMigrations as $file)
-        {
-            //Check if file exists. If true, skip copy (--force option overides).
-            if($this->option('force') || ! is_file(base_path($this->curatorMigrationPath . '/' . $file)))
-            {
-                copy(__DIR__ . '../../Database/Migrations/' . $file, base_path($this->curatorMigrationPath . '/' . $file));
-            }
-            else
-            {
-                $notice = PHP_EOL
-                        . PHP_EOL . 'Some of Curator migrations already exist, these were not unpacked.'
-                        . PHP_EOL . 'Use --force to overide existing Curator migrations.';
+                    $progressBar->advance();
+                }
             }
 
-            $progressBar->advance();
-        }
+            $progressBar->finish();
 
-        $progressBar->finish();
-
-        //Check for notice and display it.
-        if(!empty($notice))
-        {
-            $this->comment($notice);
+            echo PHP_EOL . PHP_EOL;
         }
         else
         {
-            $this->comment(''); //Output formatting correction.
+            $this->comment('IMPORTANT: Do not to migrate Laravel\'s default Auth migrations as they will conflict with the Curators.');
         }
     }
 
@@ -177,9 +183,135 @@ class InitCuratorCommand extends Command
     {
         if($this->confirm('> Do you want to run Curator\'s migrations? [y|N]', true))
         {
-            $this->callSilent('migrate', ['--path' => $this->curatorMigrationPath]);
+            $this->call('migrate', ['--path' => $this->curatorMigrationPath]);
 
-            $this->comment('Migrations OK.' . PHP_EOL);
+            $this->comment('Migrations Successful.' . PHP_EOL);
         }
+    }
+
+    /**
+     * Runs the seed command for Curator's seed files This sets up the initial settings.
+     *
+     * @return void
+     */
+    protected function doSeed()
+    {
+        $this->info('** Seeding is required for initial setup **');
+
+        if($this->confirm('> Do you want to run Curator\'s seeds? [y|N]', true))
+        {
+            $this->gatherDetails();
+
+            $this->info('Seeding database with inital setup configuration data.');
+
+            $progressBar = $this->output->createProgressBar(count($this->curatorSeeds)+1);
+
+            $this->createSeedsFromStubs();
+
+            $progressBar->advance();
+
+            foreach($this->curatorSeeds as $seed)
+            {
+                include __DIR__ . '/../Database/Seeds/' . $seed . '.php';
+
+                $this->call('db:seed', ['--class' => $seed]);
+
+                $progressBar->advance();
+            }
+
+            $progressBar->finish();
+
+            $this->comment(PHP_EOL . 'Seeds Successful.' . PHP_EOL);
+        }
+    }
+
+    /**
+     * Compile the seed stubs to copy them over to the migrations folder.
+     *
+     * @return void
+     */
+     protected function createSeedsFromStubs()
+     {
+         foreach($this->curatorStubs as $stub)
+         {
+             file_put_contents(
+                 __DIR__.'/../Database/Seeds/' . $stub . '.php',
+                 $this->compileStub($stub)
+             );
+         }
+     }
+
+     /**
+      * Compile the Curator UsersTableSeeder stub and return it.
+      *
+      * @return string
+      */
+     protected function compileStub($stub)
+     {
+         $tableSeeder = file_get_contents(__DIR__.'/../Database/Seeds/Stubs/' . $stub . '.stub');
+
+         $tableSeeder = str_replace('{{username}}', $this->adminUsername, $tableSeeder);
+         $tableSeeder = str_replace('{{email}}', $this->adminEmail, $tableSeeder);
+         $tableSeeder = str_replace('{{password}}', $this->adminPassword, $tableSeeder);
+         $tableSeeder = str_replace('{{given_name}}', $this->adminGivenName, $tableSeeder);
+         $tableSeeder = str_replace('{{family_name}}', $this->adminFamilyName, $tableSeeder);
+
+         return $tableSeeder;
+     }
+
+    /**
+     * Gathers user details for the god admin account.
+     *
+     * @return void
+     */
+    protected function gatherDetails()
+    {
+        $this->info('The Curator needs some details about you to create the main Admin account ..');
+        $this->comment('** This account cannot be deleted and will have full permissions **');
+
+        $this->adminUsername = $this->ask('Choose a username: ', 'SysAdmin');
+
+        $emailValidate = TRUE;
+
+        //Ask for e-mail.
+        while($emailValidate === TRUE)
+        {
+            $this->adminEmail = $this->ask('What is your e-mail address?');
+
+            if(! Validator::make([$this->adminEmail ], ['email'])->fails())
+            {
+                $emailValidate = FALSE;
+            }
+            else
+            {
+                $this->error('Invalid e-mail address. Try again.');
+            }
+        }
+
+        $passwordValidate = TRUE;
+
+        //Ask for password.
+        while($passwordValidate === TRUE)
+        {
+            $this->adminPassword = $this->secret('Enter your password: ');
+            $repeatPassword      = $this->secret('Enter your password again: ');
+
+            $passwordValidate = TRUE;
+
+            if(! Validator::make([$this->adminPassword], ['min:6'])->fails() && $this->adminPassword === $repeatPassword)
+            {
+                $passwordValidate = FALSE;
+            }
+            else
+            {
+                $this->error('Invalid password. Min length: 6 | Passwords must match.');
+            }
+        }
+
+        //Ask for Given name.
+        $this->adminGivenName = $this->ask('What is your first (given) name?');
+
+        //Ask for Family name.
+        $this->adminFamilyName = $this->ask('What is your last (family) name?');
     }
 }

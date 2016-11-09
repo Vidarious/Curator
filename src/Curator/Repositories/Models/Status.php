@@ -1,13 +1,12 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Curator: Status Model
-|--------------------------------------------------------------------------
-|
-| Curators status model for the Status table.
-|
-*/
+/**
+ * Curator's eloquent model for the 'status' table.
+ *
+ * Relationships:
+ *      - status => users - One to many.
+ *      - status => activity - Through users.
+ */
 
 namespace Curator\Repositories\Models;
 
@@ -15,19 +14,42 @@ use Illuminate\Database\Eloquent\Model;
 
 class Status extends Model
 {
-    //Mass assignment.
+    /**
+     * Mass assignment.
+     *
+     * @var array
+     */
     protected $fillable = ['name'];
 
-    //Use a specific table name.
+    /**
+     * Manual table assignment.
+     *
+     * @var string
+     */
     protected $table = 'status';
 
-    //Relationship: One status can be assigned to many users. One to many.
+    /**
+     * Disable timestamps.
+     *
+     * @var boolean
+     */
+    public $timestamps = FALSE;
+
+    /**
+     * Create relationship between status & users table. One to many.
+     *
+     * @return object
+     */
     public function user()
     {
         return $this->hasMany('Curator\Repositories\Models\User');
     }
 
-    //Relationship: Connects Activities to Status's through the User table.
+    /**
+     * Create relationship between activity & status tables through users.
+     * 
+     * @return object
+     */
     public function activity()
     {
         return $this->hasManyThrough('Curator\Repositories\Models\Activity',

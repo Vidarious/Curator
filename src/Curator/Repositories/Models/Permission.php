@@ -1,13 +1,12 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Curator: Permission Model
-|--------------------------------------------------------------------------
-|
-| Curators permission model for the permission table.
-|
-*/
+/**
+ * Curator's eloquent model for the 'permissions' table.
+ *
+ * Relationships:
+ *      permissions => users - Many to many.
+ *      permissions => roles - Many to many.
+ */
 
 namespace Curator\Repositories\Models;
 
@@ -15,28 +14,50 @@ use Illuminate\Database\Eloquent\Model;
 
 class Permission extends Model
 {
-    //Mass assignment
-    protected $fillable = [
+    /**
+     * Mass assignment.
+     *
+     * @var array
+     */
+    protected $fillable =
+    [
         'name',
         'description'
     ];
 
-    //Cast: 'protected' as BOOLEAN.
-    protected $casts = [
+    /**
+     * Column data casting.
+     *
+     * @var array
+     */
+    protected $casts =
+    [
         'protected',
         'boolean'
     ];
 
-    //Disable timestamps for this model.
-    public $timestamps = false;
+    /**
+     * Disable timestamps.
+     *
+     * @var boolean
+     */
+    public $timestamps = FALSE;
 
-    //Relationship: Permissions can be assigned to many users. Many to many.
+    /**
+     * Create relationship between permissions and users. Many to many.
+     *
+     * @return object
+     */
     public function users()
     {
         return $this->belongsToMany('Curator\Repositories\Models\User', 'UserPermission');
     }
 
-    //Relationship: Permissions can be assigned to many roles. Many to many.
+    /**
+     * Create relationship between permissions and roles. Many to many.
+     * 
+     * @return object
+     */
     public function roles()
     {
         return $this->belongsToMany('Curator\Repositories\Models\Role', 'RolePermission');

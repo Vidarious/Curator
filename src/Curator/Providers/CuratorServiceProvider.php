@@ -1,14 +1,9 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Curator: Service Provider
-|--------------------------------------------------------------------------
-|
-| This is Curator's primary service provider for Laravel. Be sure to add
-| this provider in your config/app.php file of your Laravel installation.
-|
-*/
+/**
+ * Curator's primary Laravel service provider. Be sure to add this provider
+ * to your <laravel-install>/config/app.php to allow this app to hook in.
+ */
 
 namespace Curator\Providers;
 
@@ -16,11 +11,15 @@ use Illuminate\Support\ServiceProvider;
 
 class CuratorServiceProvider extends ServiceProvider
 {
-    //List of Curator's commands.
+    /**
+     * A list of Curator's Artisan commands.
+     *
+     * @var array
+     */
     protected $curatorCommands =
-        [
-            \Curator\Console\InitCuratorCommand::class
-        ];
+    [
+        \Curator\Console\InitCuratorCommand::class
+    ];
 
     /**
      * Bootstrap the application services.

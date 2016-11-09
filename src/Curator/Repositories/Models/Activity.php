@@ -1,13 +1,10 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Curator: Activity Model
-|--------------------------------------------------------------------------
-|
-| Curators activity model for the Activity table.
-|
-*/
+/**
+ * Curator's eloquent model for the 'activity' table.
+ *
+ * Relationships: activity => users - One to many.
+ */
 
 namespace Curator\Repositories\Models;
 
@@ -15,17 +12,30 @@ use Illuminate\Database\Eloquent\Model;
 
 class Activity extends Model
 {
-    //Mass assignment.
-    protected $fillable = [
+    /**
+     * Mass assignment.
+     *
+     * @var array
+     */
+    protected $fillable =
+    [
         'user_id',
         'action',
         'ip_address'
     ];
 
-    //Use a specific table name.
+    /**
+     * Manual table assignment.
+     *
+     * @var string
+     */
     protected $table = 'activity';
 
-    //Relationship: Each activity is assigned to one user. One to many.
+    /**
+     * Create relationship between activity & users table. One to many.
+     *
+     * @return object
+     */
     public function user()
     {
         return $this->belongsTo('Curator\Repositories\Models\User');

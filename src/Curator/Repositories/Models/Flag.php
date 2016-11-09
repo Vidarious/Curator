@@ -1,13 +1,10 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Curator: Flag Model
-|--------------------------------------------------------------------------
-|
-| Curators flag model for the Flag table.
-|
-*/
+/**
+ * Curator's eloquent model for the 'flags' table.
+ *
+ * Relationships: flags => users - Many to many.
+ */
 
 namespace Curator\Repositories\Models;
 
@@ -15,14 +12,25 @@ use Illuminate\Database\Eloquent\Model;
 
 class Flag extends Model
 {
-    //Mass assignment
+    /**
+     * Mass assignment.
+     *
+     * @var array
+     */
     protected $fillable = ['name'];
 
-    //Disable timestamps for this model.
-    public $timestamps = false;
+    /**
+     * Disable timestamps.
+     *
+     * @var boolean
+     */
+    public $timestamps = FALSE;
 
-    //Relationship: Each status can be assigned to multiple users. Many to many.
-    //Flag belongsToMany User as defined by UserFlag with userID and flagID.
+    /**
+     * Create relationship between flags and users. Many to many.
+     * 
+     * @return object
+     */
     public function users()
     {
         return $this->belongsToMany('Curator\Models\Repositories\User', 'UserFlag');
