@@ -45,11 +45,18 @@ class CuratorInitCommand extends Command
     {
         $this->info('The Curator is moving in ..' . PHP_EOL);
 
+        //Copy Resources
+        $this->call('curator:resource');
+
         //Perform Migrate
         $this->call('curator:migrate', ['--force' => TRUE]);
 
         //Perform Seeds
         $this->call('curator:seed', ['--force' => TRUE]);
+
+        //Copy Curator resources to public directory.
+        $this->createDirectories();
+        $this->copyResources();
 
         $this->info('The Curator has settled in nicely!');
     }
