@@ -58,9 +58,9 @@ class CuratorResourceCommand extends Command
 
         $this->curatorResourceDirectories =
         [
-            __DIR__ . '/../Resources/css'  => public_path() . '/css/vendor/curator',
-            __DIR__ . '/../Resources/js'   => public_path() . '/js/vendor/curator',
-            __DIR__ . '/../Resources/font' => public_path() . '/font/vendor/curator'
+            __DIR__ . '/../Resources/Assets/css'  => public_path() . '/css/vendor/curator',
+            __DIR__ . '/../Resources/Assets/js'   => public_path() . '/js/vendor/curator',
+            __DIR__ . '/../Resources/Assets/font' => public_path() . '/font/vendor/curator'
         ];
     }
 

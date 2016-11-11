@@ -44,5 +44,11 @@ class CuratorServiceProvider extends ServiceProvider
     {
         //Register Curator's commands with Artisan.
         $this->commands($this->curatorCommands);
+
+        //Load Curator's routes.
+        include __DIR__ . '/../Routes/CuratorRoutesWeb.php';
+
+        //Register Curator's views.
+        $this->loadViewsFrom(__DIR__ . '/../Resources/Views', 'curator');
     }
 }

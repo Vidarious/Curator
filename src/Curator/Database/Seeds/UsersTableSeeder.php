@@ -22,7 +22,7 @@ class UsersTableSeeder extends Seeder
 
         $user->email = 'asfa@asfa.com';
         $user->username = 'Vidarious';
-        $user->password = Hash::make('thefnb');
+        $user->password = bcrypt('thefnb');
         $user->given_name = 'dfwf';
         $user->family_name = 'wefwe';
         $user->status_id = $statusID;
