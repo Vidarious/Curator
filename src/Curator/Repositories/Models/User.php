@@ -13,10 +13,13 @@
 
 namespace Curator\Repositories\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends Model
+class User extends Authenticatable
 {
+    use Notifiable;
+
     /**
      * Mass assignment.
      *
@@ -129,7 +132,7 @@ class User extends Model
 
     /**
      * Accessor: Return a capitalized family name.
-     * 
+     *
      * @return void
      */
     public function getFamilyNameAttribute($value)

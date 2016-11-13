@@ -29,11 +29,10 @@ Route::get('/home', 'App\Http\Controllers\HomeController@index');
 **/
 
 Route::group(['middleware' => ['web']], function () {
-    //Route to Controller: CuratorController:Index.
-    Route::get('home', 'Curator\Controllers\DashboardController@Home')->name('Home');
-
     //Route to Controller: CuratorController:Login
-    Route::get('login', 'Curator\Controllers\LoginController@Login')->name('Login');
+    Route::get('login', 'Curator\Controllers\LoginController@loginForm')->name('login');
+    Route::post('login', 'Curator\Controllers\LoginController@login');
+    Route::post('logout', 'Curator\Controllers\LoginController@logout')->name('logout');
 
     //Route to Controller: CuratorController:Dashboard.
     Route::get('dashboard', 'Curator\Controllers\DashboardController@Dashboard')->name('Dashboard');
