@@ -54,10 +54,6 @@ class CuratorInitCommand extends Command
         //Perform Seeds
         $this->call('curator:seed', ['--force' => TRUE]);
 
-        //Copy Curator resources to public directory.
-        $this->createDirectories();
-        $this->copyResources();
-
         $this->info('The Curator has settled in nicely!');
     }
 }

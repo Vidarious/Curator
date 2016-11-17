@@ -36,7 +36,7 @@ class CuratorMigrateCommand extends Command
      *
      * @var string
      */
-    protected $curatorMigrationPath = NULL;
+    protected $curatorMigrationPath = 'vendor/ila/curator/src/Curator/Database/Migrations';
 
     /**
      * Create a new command instance.
@@ -48,7 +48,7 @@ class CuratorMigrateCommand extends Command
         parent::__construct();
 
         //Create the proper migration page for the migrate command.
-        $this->curatorMigrationPath = str_replace('/Console', '/Database/Migrations', __DIR__);
+        //$this->curatorMigrationPath = str_replace('/Console', '/Database/Migrations', __DIR__);
     }
 
     /**

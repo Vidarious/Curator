@@ -37,7 +37,7 @@ class CuratorRollbackCommand extends Command
         parent::__construct();
 
         //Create the proper migration page for the migrate command.
-        $this->curatorMigrationPath = str_replace('/Console', '/Database/Migrations', __DIR__);
+        $this->curatorMigrationPath = 'vendor/ila/curator/src/Curator/Database/Migrations';
     }
 
     /**

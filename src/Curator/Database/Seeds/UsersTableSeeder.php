@@ -20,11 +20,11 @@ class UsersTableSeeder extends Seeder
 
         $user = new Curator\Repositories\Models\User;
 
-        $user->email = 'asfa@asfa.com';
+        $user->email = 'jdruhan.home@gmail.com';
         $user->username = 'Vidarious';
         $user->password = bcrypt('thefnb');
-        $user->given_name = 'dfwf';
-        $user->family_name = 'wefwe';
+        $user->given_name = 'James';
+        $user->family_name = 'Druhan';
         $user->status_id = $statusID;
 
         //Insert record.
